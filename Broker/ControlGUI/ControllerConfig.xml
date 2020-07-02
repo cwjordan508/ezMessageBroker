@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Processes>
+  <ServerURI>C:\GitHub\ezMessageBroker\Broker\ControlServer\bin\Debug\netcoreapp3.1\ControlServer.exe</ServerURI>
+  <Process>
+    <ProcessID>1</ProcessID>
+    <Name>Test Pilot</Name>
+    <URI>C:\GitHub\ezMessageBroker\Broker\PilotFriend\bin\Debug\netcoreapp3.1\PilotFriend.exe</URI>
+  </Process>
+</Processes> 

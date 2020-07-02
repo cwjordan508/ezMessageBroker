@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ControlClient</name>
+    </assembly>
+    <members>
+        <member name="T:ControlClient.Client">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ControlClient.Client.#ctor(System.Int32)">
+            <summary>
+                Provide a unique process ID for any process you wish to control.  If you are instantiating from a controller GUI,
+                the ID can be arbitrary.
+            </summary>
+            <param name="procId"></param>
+        </member>
+        <member name="M:ControlClient.Client.IsListening">
+            <summary>
+                IsListening can be used to determine if the server is already running.
+                This is useful in the GUI when deciding to start the server or not
+            </summary>
+        </member>
+        <member name="M:ControlClient.Client.ProcessRunning">
+            <summary>
+                ProcessRunning is to be used as a conditional check to determine if the process should continue running or not.
+                It will return true when there is not kill request for the process, and false when there is.
+                It can be used to terminate or break out of long, nested, or indefinite running loops.
+            </summary>
+        </member>
+        <member name="M:ControlClient.Client.RequestKill(System.Int32)">
+            <summary>
+                This method is intended to be called via the controller GUI.
+                It sends a request to kill an application based on the assigned process ID.
+            </summary>
+        </member>
+        <member name="M:ControlClient.Client.ReportKill">
+            <summary>
+                This method takes the current process out of the running processes list.
+                This should be the final call before application exit.
+            </summary>
+        </member>
+        <member name="M:ControlClient.Client.CheckProcessStatus(System.Int32)">
+            <summary>
+                CheckProcessStatus will return true if the supplied process id is still running
+            </summary>
+        </member>
+        <member name="M:ControlClient.Client.KillServer">
+            <summary>
+                This method sends the server a shutdown request.
+            </summary>
+        </member>
+        <member name="M:ControlClient.Client.Connect(System.Byte[])">
+            <summary>
+                Connect is a private method that connects and sends a message to the TCP server.
+            </summary>
+        </member>
+    </members>
+</doc>
