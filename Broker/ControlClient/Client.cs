@@ -1,7 +1,7 @@
 ﻿using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using Message;
-using Utf8Json;
 
 namespace ControlClient
 {
@@ -38,7 +38,7 @@ namespace ControlClient
 
                 var pStatus = new ProcessMessage {MessageType = 0};
 
-                var byteArray = JsonSerializer.Serialize(pStatus);
+                var byteArray = JsonSerializer.SerializeToUtf8Bytes(pStatus);
 
                 var response = Connect(byteArray);
 
@@ -64,7 +64,7 @@ namespace ControlClient
             // create message object, serialize and send to server
             var pStatus = new ProcessMessage {ProcId = _procId, MessageType = 1};
             //  var byteArray = JsonSerializer.Serialize(pStatus);
-            var byteArray = JsonSerializer.Serialize(pStatus);
+            var byteArray = JsonSerializer.SerializeToUtf8Bytes(pStatus);
             // pass object and read response
             var response = Connect(byteArray);
 
@@ -84,7 +84,7 @@ namespace ControlClient
             // create message object, serialize and send to server
             var pStatus = new ProcessMessage {ProcId = target, MessageType = 2};
             //  var byteArray = JsonSerializer.Serialize(pStatus);
-            var byteArray = JsonSerializer.Serialize(pStatus);
+            var byteArray = JsonSerializer.SerializeToUtf8Bytes(pStatus);
             // pass to server.  we aren't doing anything with the server's response right here, maybe we should.
             Connect(byteArray);
         }
@@ -99,7 +99,7 @@ namespace ControlClient
             // create message object, serialize and send to server
             var pStatus = new ProcessMessage {ProcId = _procId, MessageType = 4};
             //  var byteArray = JsonSerializer.Serialize(pStatus);
-            var byteArray = JsonSerializer.Serialize(pStatus);
+            var byteArray = JsonSerializer.SerializeToUtf8Bytes(pStatus);
             // pass object and read response -- we don't need a response from this
             Connect(byteArray);
         }
@@ -114,7 +114,7 @@ namespace ControlClient
             // create message object, serialize and send to server
             var pStatus = new ProcessMessage {ProcId = target, MessageType = 3};
             //  var byteArray = JsonSerializer.Serialize(pStatus);
-            var byteArray = JsonSerializer.Serialize(pStatus);
+            var byteArray = JsonSerializer.SerializeToUtf8Bytes(pStatus);
             // pass byteArray to TCP server and parse response.  A response of "1" means the process is running.
             var response = Connect(byteArray);
             if (response == "1") running = true;
@@ -130,7 +130,7 @@ namespace ControlClient
             // create message object, serialize and send to server
             var pStatus = new ProcessMessage {MessageType = 5};
             //   var byteArray = JsonSerializer.Serialize(pStatus);
-            var byteArray = JsonSerializer.Serialize(pStatus);
+            var byteArray = JsonSerializer.SerializeToUtf8Bytes(pStatus);
             // pass object and read response -- we don't need a response from this
             Connect(byteArray);
         }

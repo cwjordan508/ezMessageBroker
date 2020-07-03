@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Message;
-using Utf8Json;
+using System.Text.Json;
 
 namespace ControlServer
 {
@@ -62,7 +62,9 @@ namespace ControlServer
                     // Loop to receive all the data sent by the client.
                     while (stream.Read(bytes, 0, bytes.Length) != 0)
                     {
-                        var curProcess = JsonSerializer.Deserialize<ProcessMessage>(bytes);
+                        ///var curProcess = JsonSerializer.Deserialize<ProcessMessage>(bytes);
+                        var sequence = new Utf8JsonReader(bytes);
+                        var curProcess = JsonSerializer.Deserialize<ProcessMessage>(ref sequence);
 
                         // run logic on the process object, and determine appropriate response
                         var data = ProcessLogic(curProcess);
