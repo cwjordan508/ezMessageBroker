@@ -4,17 +4,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Message;
-using System.Text.Json;
 
 namespace ControlServer
 {
     internal class Program
     {
-
-        // TODO:  Come up with a way to no hard code the parameters
-        private const int Port = 42069;
-        private const string Ip = "127.0.0.1";
-
 
         private static readonly List<int>
             HitList = new List<int>(); // "hit list" aka list of processes that have a kill request
@@ -33,13 +27,14 @@ namespace ControlServer
 
         private static void Main()
         {
-            Write2Con("ezMessageBroker Server Started!");
+            Write2Con("ezMessageBroker Server Started");
 
             TcpListener server = null;
             try
             {
-                const int port = Port;
-                var localAdd = IPAddress.Parse(Ip);
+
+                var port = int.Parse(Environment.GetEnvironmentVariable("TCPPORT") ?? string.Empty);
+                var localAdd = IPAddress.Parse(Environment.GetEnvironmentVariable("TCPIP") ?? string.Empty);
 
                 server = new TcpListener(localAdd, port);
 
@@ -62,9 +57,8 @@ namespace ControlServer
                     // Loop to receive all the data sent by the client.
                     while (stream.Read(bytes, 0, bytes.Length) != 0)
                     {
-                        ///var curProcess = JsonSerializer.Deserialize<ProcessMessage>(bytes);
-                        var sequence = new Utf8JsonReader(bytes);
-                        var curProcess = JsonSerializer.Deserialize<ProcessMessage>(ref sequence);
+
+                        var curProcess = MessageMethods.DeserializeMessage<ProcessMessage>(bytes);
 
                         // run logic on the process object, and determine appropriate response
                         var data = ProcessLogic(curProcess);
@@ -80,6 +74,7 @@ namespace ControlServer
             catch (SocketException e)
             {
                 Write2Con("SocketException: " + e);
+                Environment.Exit(0);
             }
             finally
             {

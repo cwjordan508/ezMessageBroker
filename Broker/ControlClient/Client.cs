@@ -1,7 +1,7 @@
-﻿using System.Net.Sockets;
-using System.Text;
-using System.Text.Json;
+﻿using System;
+using System.Net.Sockets;
 using Message;
+using Newtonsoft.Json;
 
 namespace ControlClient
 {
@@ -10,8 +10,7 @@ namespace ControlClient
     public class Client
     {
         // TODO:  Come up with a way to no hard code the parameters
-        private const int Port = 42069;
-        private const string Ip = "127.0.0.1";
+
 
         private readonly int _procId;
 
@@ -38,7 +37,7 @@ namespace ControlClient
 
                 var pStatus = new ProcessMessage {MessageType = 0};
 
-                var byteArray = JsonSerializer.SerializeToUtf8Bytes(pStatus);
+                var byteArray = JsonConvert.SerializeObject(pStatus);
 
                 var response = Connect(byteArray);
 
@@ -64,7 +63,7 @@ namespace ControlClient
             // create message object, serialize and send to server
             var pStatus = new ProcessMessage {ProcId = _procId, MessageType = 1};
             //  var byteArray = JsonSerializer.Serialize(pStatus);
-            var byteArray = JsonSerializer.SerializeToUtf8Bytes(pStatus);
+            var byteArray = JsonConvert.SerializeObject(pStatus);
             // pass object and read response
             var response = Connect(byteArray);
 
@@ -84,7 +83,7 @@ namespace ControlClient
             // create message object, serialize and send to server
             var pStatus = new ProcessMessage {ProcId = target, MessageType = 2};
             //  var byteArray = JsonSerializer.Serialize(pStatus);
-            var byteArray = JsonSerializer.SerializeToUtf8Bytes(pStatus);
+            var byteArray = JsonConvert.SerializeObject(pStatus);
             // pass to server.  we aren't doing anything with the server's response right here, maybe we should.
             Connect(byteArray);
         }
@@ -99,7 +98,7 @@ namespace ControlClient
             // create message object, serialize and send to server
             var pStatus = new ProcessMessage {ProcId = _procId, MessageType = 4};
             //  var byteArray = JsonSerializer.Serialize(pStatus);
-            var byteArray = JsonSerializer.SerializeToUtf8Bytes(pStatus);
+            var byteArray = JsonConvert.SerializeObject(pStatus);
             // pass object and read response -- we don't need a response from this
             Connect(byteArray);
         }
@@ -114,7 +113,7 @@ namespace ControlClient
             // create message object, serialize and send to server
             var pStatus = new ProcessMessage {ProcId = target, MessageType = 3};
             //  var byteArray = JsonSerializer.Serialize(pStatus);
-            var byteArray = JsonSerializer.SerializeToUtf8Bytes(pStatus);
+            var byteArray = JsonConvert.SerializeObject(pStatus);
             // pass byteArray to TCP server and parse response.  A response of "1" means the process is running.
             var response = Connect(byteArray);
             if (response == "1") running = true;
@@ -130,7 +129,7 @@ namespace ControlClient
             // create message object, serialize and send to server
             var pStatus = new ProcessMessage {MessageType = 5};
             //   var byteArray = JsonSerializer.Serialize(pStatus);
-            var byteArray = JsonSerializer.SerializeToUtf8Bytes(pStatus);
+            var byteArray = JsonConvert.SerializeObject(pStatus);
             // pass object and read response -- we don't need a response from this
             Connect(byteArray);
         }
@@ -139,13 +138,16 @@ namespace ControlClient
         /// <summary>
         ///     Connect is a private method that connects and sends a message to the TCP server.
         /// </summary>
-        private string Connect(byte[] data)
+        private string Connect(string message)
         {
             string response;
             try
             {
                 // Create a TcpClient.
-                var client = new TcpClient(Ip, Port);
+                var client = new TcpClient(Environment.GetEnvironmentVariable("TCPIP") ?? string.Empty, int.Parse(Environment.GetEnvironmentVariable("TCPPORT") ?? string.Empty));
+
+                // Translate the passed message into UTF8 and store it as a Byte array.
+                byte[] data = System.Text.Encoding.UTF8.GetBytes(message);
 
                 var stream = client.GetStream();
 
@@ -153,25 +155,23 @@ namespace ControlClient
                 stream.Write(data, 0, data.Length);
 
                 // Buffer to store the response bytes.
-                data = new byte[256];
+                data = new Byte[256];
 
                 // String to store the response UTF8 representation.
 
                 // Read the first batch of the TcpServer response bytes.
                 var bytes = stream.Read(data, 0, data.Length);
-                var responseData = Encoding.UTF8.GetString(data, 0, bytes);
+                var responseData = System.Text.Encoding.UTF8.GetString(data, 0, bytes);
                 response = responseData;
 
                 // Close everything.
                 stream.Close();
                 client.Close();
             }
-            catch
-            {
-                response = null;
-            }
-
+            catch { response = null; }
             return response;
+
         }
+
     }
 }

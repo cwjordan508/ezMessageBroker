@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Windows;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using ControlClient;
@@ -14,6 +16,9 @@ namespace EzControlGUI
     {
         public MainWindow()
         {
+
+            InitializeComponent();
+
             var xmlPath = AppDomain.CurrentDomain.BaseDirectory + "ControllerConfig.xml";
 
             var xd = XDocument.Load(xmlPath);
@@ -22,13 +27,16 @@ namespace EzControlGUI
 
             var client = new Client(-999);
 
-            if (!client.IsListening())
+			if (!client.IsListening())
             {
-                System.Diagnostics.Process.Start(processes.ServerURI);
+
+                var startInfo = new ProcessStartInfo(processes.ServerURI)
+                {
+                    CreateNoWindow = true
+                };
+                System.Diagnostics.Process.Start(startInfo);
+
             }
-
-            InitializeComponent();
-
 
             foreach (var tog in processes.Process.Select(p => new UcProcessButton(p.Name, p.URI, p.ProcessID)))
                 SpMain.Children.Add(tog);
